@@ -13,8 +13,10 @@ namespace TwitchChatBot
     {
         public const string Host = "irc.twitch.tv";
         public const int port = 6667;
-        public const string BotNick = "AmbushedRaccoonBot";
-        public const string ChannelName = "ambushedraccoontv";
+        //Insert here NickName using camel case of your bot
+        public const string BotNick = "BotNickName";
+        //Insert here channel you wanna connect using lower case 
+        public const string ChannelName = "channelname";
     }
 
     public class TwitchIRCClient
@@ -35,6 +37,7 @@ namespace TwitchChatBot
             reader = new StreamReader(client.GetStream());
             writer = new StreamWriter(client.GetStream());
             writer.AutoFlush = true;
+            //inser here your oauth:... token or read it from file
             passToken = File.ReadAllText("auth.ps");
         }
 
