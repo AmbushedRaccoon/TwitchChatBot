@@ -10,6 +10,7 @@ namespace TwitchChatBot
         private string number = string.Empty;
         private int count = 0;
         public bool IsWin { get; private set; }
+        public int Count => count;
 
         public BullsAndCows(string userName)
         {

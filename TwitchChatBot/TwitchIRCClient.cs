@@ -14,9 +14,8 @@ namespace TwitchChatBot
         public const string Host = "irc.twitch.tv";
         public const int port = 6667;
         //Insert here NickName using camel case of your bot
-        public const string BotNick = "BotNickName";
-        //Insert here channel you wanna connect using lower case 
-        public const string ChannelName = "channelname";
+        public const string BotNick = "AmbushedRaccoonBot";
+        public const string ChannelName = "ambushedraccoontv";
     }
 
     public class TwitchIRCClient
@@ -31,13 +30,17 @@ namespace TwitchChatBot
         };
         private Dictionary<string, BullsAndCows> bullsAndCows = new Dictionary<string, BullsAndCows>();
 
+        private CowsStatistics statistics = new CowsStatistics();
+
+        private const string statsCommand = "!showstats";
+
         public TwitchIRCClient()
         {
             client = new TcpClient(TwitchInit.Host, TwitchInit.port);
             reader = new StreamReader(client.GetStream());
             writer = new StreamWriter(client.GetStream());
             writer.AutoFlush = true;
-            //inser here your oauth:... token or read it from file
+            //insert here your oauth:... token or read it from file
             passToken = File.ReadAllText("auth.ps");
         }
 
@@ -83,8 +86,18 @@ namespace TwitchChatBot
                     {
                         HandleCows(message);
                     }
+                    else if (message.Contains(statsCommand))
+                    {
+                        HandleStatistics(message);
+                    }
                 }
             }
+        }
+
+        private void HandleStatistics(string message)
+        {
+            string result = "Статистика игроков " + statistics.PrintStatistics();
+            SendMessage(result);
         }
 
         private void HandleCows(string message)
@@ -145,9 +158,11 @@ namespace TwitchChatBot
                 string replyMessage = string.Empty;
                 if (CheckDigits(number))
                 {
-                    replyMessage = bullsAndCows[userName].Guess(number);
-                    if (bullsAndCows[userName].IsWin)
+                    var game = bullsAndCows[userName];
+                    replyMessage = game.Guess(number);
+                    if (game.IsWin)
                     {
+                        statistics.UpdateStatistics(userName, game.Count);
                         bullsAndCows.Remove(userName);
                     }
                 }
